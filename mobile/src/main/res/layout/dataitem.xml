@@ -5,16 +5,6 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:padding="3dip">
 
-    <ImageView
-        android:id="@+id/thumbnail"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginRight="3dp"
-        android:layout_marginTop="5dp"
-        android:adjustViewBounds="true"
-        android:maxWidth="50dp"
-        android:scaleType="center"/>
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,29 +14,52 @@
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:ellipsize="marquee"
             android:singleLine="true"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textSize="32sp"
+            android:text="Date" />
 
-        <TextView
-            android:id="@+id/lying_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/lying"
-            style="@android:style/Widget.Button"
-            android:clickable="false"
-            android:layout_marginRight="5sp"/>
-        />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/sitting_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/sitting"
-            style="@android:style/Widget.Button"
-            android:clickable="false"
-            android:layout_marginRight="5sp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/image_lying"
+                android:src="@mipmap/lying" />
+
+            <TextView
+                android:id="@+id/lying_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="Lying time" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/image_sitting"
+                android:src="@mipmap/sitting" />
+
+            <TextView
+                android:id="@+id/sitting_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="Lying time" />
+        </LinearLayout>
+
+        <!--
 
         <TextView
             android:id="@+id/running_time"
@@ -85,7 +98,7 @@
             android:id="@+id/deadlift_rep"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/deadlift"
+            android:drawableLeft="@mipmap/squat"
             style="@android:style/Widget.Button"
             android:clickable="false"
             android:layout_marginRight="5sp"/>
@@ -100,7 +113,7 @@
             android:id="@+id/squat_rep"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/squat"
+            android:drawableLeft="@mipmap/deadlift"
             style="@android:style/Widget.Button"
             android:clickable="false"
             android:layout_marginRight="5sp"/>
@@ -111,7 +124,7 @@
             android:layout_height="wrap_content"/>
 
 
-
+-->
     </LinearLayout>
 
 </LinearLayout>

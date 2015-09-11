@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.ecommerce.Product;
-
 import java.util.ArrayList;
 
 /**
@@ -39,7 +37,7 @@ public class MyAdapter extends ArrayAdapter<Data> {
             TextView date = (TextView) v.findViewById(R.id.date);
 
             TextView lying = (TextView) v.findViewById(R.id.lying_time);
-            TextView running = (TextView) v.findViewById(R.id.running_time);
+            /*TextView running = (TextView) v.findViewById(R.id.running_time);
             TextView sitting = (TextView) v.findViewById(R.id.sitting_time);
             TextView walking = (TextView) v.findViewById(R.id.walking_time);
 
@@ -97,7 +95,7 @@ public class MyAdapter extends ArrayAdapter<Data> {
                 squat_time.setText("\t\tSquat Time: " + data.getSquat_time() + " minutes");
             }
 
-
+*/
 
         }
 
