@@ -2,7 +2,6 @@ package com.example.ryanlpeterman.workouttracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -35,10 +34,6 @@ public class CalendarActivity extends AppCompatActivity {
         caldroidFragment.setArguments(args);
 
         final FragmentTransaction t = getSupportFragmentManager().beginTransaction();
-
-        final Fragment sumfrag = new SummaryFragment();
-        final Bundle bundle = new Bundle();
-
         t.replace(R.id.calendar1, caldroidFragment);
 
         final CaldroidListener listener = new CaldroidListener() {

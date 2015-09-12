@@ -86,6 +86,7 @@ public class SensorService extends Service implements SensorEventListener, DataA
                         .addConnectionCallbacks(this)
                         .addOnConnectionFailedListener(this)
                         .build();
+        googleApiClient.connect();
 
         Notification.Builder builder = new Notification.Builder(this);
         builder.setContentTitle("Sensor Dashboard");
@@ -143,17 +144,17 @@ public class SensorService extends Service implements SensorEventListener, DataA
 
         mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
 
-        Sensor accelerometerSensor = mSensorManager.getDefaultSensor(SENS_ACCELEROMETER);
+        //Sensor accelerometerSensor = mSensorManager.getDefaultSensor(SENS_ACCELEROMETER);
         Sensor gyroscopeSensor = mSensorManager.getDefaultSensor(SENS_GYROSCOPE);
         Sensor stepCounterSensor = mSensorManager.getDefaultSensor(SENS_STEP_COUNTER);
 
         // Register the listener
         if (mSensorManager != null) {
-            if (accelerometerSensor != null) {
-                mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
-            } else {
-                Log.w(TAG, "No Accel found");
-            }
+            //if (accelerometerSensor != null) {
+            //    mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
+            //} else {
+            //    Log.w(TAG, "No Accel found");
+            //}
             if (gyroscopeSensor != null) {
                 mSensorManager.registerListener(this, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST);
             } else {
@@ -182,7 +183,7 @@ public class SensorService extends Service implements SensorEventListener, DataA
         int type = event.sensor.getType();
         //long timestamp = event.timestamp;
 
-        if (type == SENS_ACCELEROMETER) {
+        if (type == SENS_GYROSCOPE) {
 
             // if sample could not be added because buffer is full
             if(!liftWindow.addSample(event)){
@@ -215,6 +216,7 @@ public class SensorService extends Service implements SensorEventListener, DataA
                     // TODO: pop out warning or something?
                 }
             }
+            Log.i("Watch", "exit");
         }
     }
 
