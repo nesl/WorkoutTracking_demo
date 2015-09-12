@@ -29,6 +29,10 @@
             android:name=".WorkoutActivity"
             android:label="@string/title_activity_workout" >
         </activity>
+        <activity
+            android:name=".PlotActivity"
+            android:label="@string/title_activity_plot" >
+        </activity>
     </application>
 
 </manifest>
