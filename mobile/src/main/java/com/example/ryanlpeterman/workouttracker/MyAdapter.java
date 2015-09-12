@@ -14,12 +14,12 @@ import java.util.ArrayList;
  * Customized adapter to display fields of data class
  * Fields of data class represent activity completed
  */
-public class MyAdapter extends ArrayAdapter<Data> {
-    private ArrayList<Data> lData;
+public class MyAdapter extends ArrayAdapter<WorkoutData> {
+    private ArrayList<WorkoutData> lData;
 
     private static LayoutInflater inflater = null;
 
-    public MyAdapter(Context context, int resource,  ArrayList<Data> lData) {
+    public MyAdapter(Context context, int resource,  ArrayList<WorkoutData> lData) {
         super(context, resource, lData);
         this.lData = lData;
     }
@@ -31,7 +31,7 @@ public class MyAdapter extends ArrayAdapter<Data> {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.dataitem, null);
         }
-        Data data = lData.get(position);
+        WorkoutData data = lData.get(position);
 
         if(data != null) {
             TextView date = (TextView) v.findViewById(R.id.date);

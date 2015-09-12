@@ -37,6 +37,8 @@ public class MainActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initialDefaultData();
+
         // Build a new GoogleApiClient for the Wearable API
         googleClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -66,7 +68,7 @@ public class MainActivity extends FragmentActivity implements
     // Send a message when the data layer connection is successful
     @Override
     public void onConnected(Bundle connectionHint) {
-        String message = "Device is Currently Connected\n Via the Data Layer";
+        String message = "Device is Currently Connected\n Via the WorkoutData Layer";
         //Requires a new thread to avoid blocking the UI
         Wearable.DataApi.addListener(googleClient, this);
 
@@ -180,5 +182,42 @@ public class MainActivity extends FragmentActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    public void initialDefaultData() {
+        WorkoutData.makeDataFolder();
 
+        WorkoutData newExercise = new WorkoutData();
+        newExercise.setDate("03 Sep 2015");
+        newExercise.setBench_rep(30);
+        newExercise.setDeadlift_rep(30);
+        newExercise.setSquat_rep(30);
+        newExercise.setBench_time(12);
+        newExercise.setDeadlift_time(8);
+        newExercise.setSquat_time(13);
+        newExercise.setLying_time(40);
+        newExercise.save(/* truncate */ true);
+
+        newExercise = new WorkoutData();
+        newExercise.setDate("05 Sep 2015");
+        newExercise.setBench_rep(45);
+        newExercise.setDeadlift_rep(45);
+        newExercise.setSquat_rep(45);
+        newExercise.setBench_time(20);
+        newExercise.setDeadlift_time(30);
+        newExercise.setSquat_time(20);
+        newExercise.setWalking_time(12);
+        newExercise.setRunning_time(20);
+        newExercise.save(/* truncate */ true);
+
+        newExercise = new WorkoutData();
+        newExercise.setDate("06 Sep 2015");
+        newExercise.setBench_rep(30);
+        newExercise.setDeadlift_rep(30);
+        newExercise.setSquat_rep(30);
+        newExercise.setBench_time(10);
+        newExercise.setDeadlift_time(10);
+        newExercise.setSquat_time(10);
+        newExercise.setWalking_time(90);
+        newExercise.setRunning_time(80);
+        newExercise.save(/* truncate */ true);
+    }
 }

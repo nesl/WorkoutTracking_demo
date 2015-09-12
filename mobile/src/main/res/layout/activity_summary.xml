@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left|top"
         android:paddingLeft="18dp"
-        android:listSelector="#0000FF">
+        android:listSelector="#FFFFFF">
     </ListView>
 
 </FrameLayout>

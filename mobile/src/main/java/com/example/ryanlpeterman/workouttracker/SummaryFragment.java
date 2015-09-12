@@ -1,23 +1,20 @@
 package com.example.ryanlpeterman.workouttracker;
 
-import android.support.v4.app.Fragment;
-
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
  * Created by tahiyasalam on 8/3/15.
  */
 public class SummaryFragment extends Fragment {
-    public static final ArrayList<Data> events = new ArrayList<Data>();
+    public static final ArrayList<WorkoutData> events = new ArrayList<WorkoutData>();
     private ListView mListView;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,13 +24,15 @@ public class SummaryFragment extends Fragment {
         mListView = (ListView) view.findViewById(R.id.listView);
 
         String date = null;
-        Data eventClicked = null;
+        WorkoutData eventClicked = null;
 
         if (getArguments() != null) {
             date = getArguments().getString("Date");
         }
+        Log.i("GET_DATE", date);
 
-        for (Data d : mEvents()) {
+        /*
+        for (WorkoutData d : mEvents()) {
             if(d.getDate() != null && d.getDate().equals(date)) {
                 eventClicked = d;
                 Toast.makeText(getActivity().getApplicationContext(),
@@ -46,8 +45,9 @@ public class SummaryFragment extends Fragment {
                         Toast.LENGTH_SHORT).show();
             }
         }
+*/
 
-        ArrayList<Data> selectedEvent = new ArrayList<Data>();
+        ArrayList<WorkoutData> selectedEvent = new ArrayList<WorkoutData>();
         selectedEvent.add(eventClicked);
 
         MyAdapter arrayAdapter = new MyAdapter(this.getActivity(), R.layout.dataitem, selectedEvent);
@@ -55,51 +55,5 @@ public class SummaryFragment extends Fragment {
 
         return view;
     }
-
-    public ArrayList<Data> mEvents() {
-        final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
-
-        //Data structure for holding information related to activities/days
-
-        //Dummy data
-        Data newExercise = new Data();
-        newExercise.setDate("03 Aug 2015");
-        newExercise.setBench_rep(30);
-        newExercise.setDeadlift_rep(30);
-        newExercise.setSquat_rep(30);
-        newExercise.setBench_time(12);
-        newExercise.setDeadlift_time(8);
-        newExercise.setSquat_time(13);
-        newExercise.setLying_time(40);
-
-        Data newExercise2 = new Data();
-        newExercise2.setDate("05 Aug 2015");
-        newExercise2.setBench_rep(45);
-        newExercise2.setDeadlift_rep(45);
-        newExercise2.setSquat_rep(45);
-        newExercise2.setBench_time(20);
-        newExercise2.setDeadlift_time(30);
-        newExercise2.setSquat_time(20);
-        newExercise2.setWalking_time(12);
-        newExercise2.setRunning_time(20);
-
-        Data newExercise3 = new Data();
-        newExercise3.setDate("06 Aug 2015");
-        newExercise3.setBench_rep(30);
-        newExercise3.setDeadlift_rep(30);
-        newExercise3.setSquat_rep(30);
-        newExercise3.setBench_time(10);
-        newExercise3.setDeadlift_time(10);
-        newExercise3.setSquat_time(10);
-        newExercise3.setWalking_time(90);
-        newExercise3.setRunning_time(80);
-
-        events.add(newExercise);
-        events.add(newExercise2);
-        events.add(newExercise3);
-
-        return events;
-    }
-
 
 }
