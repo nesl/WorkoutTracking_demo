@@ -112,6 +112,12 @@ public class MainActivity extends FragmentActivity implements
         startActivity(intent);
     }
 
+    // Open plot activity to visualize sensor data
+    public void visualizeButtonPressed(View view) {
+        Intent intent = new Intent(this, PlotActivity.class);
+        startActivity(intent);
+    }
+
     // Connection has been interrupted
     // Should disable components that depend on connection until onConnected() is called
     @Override
