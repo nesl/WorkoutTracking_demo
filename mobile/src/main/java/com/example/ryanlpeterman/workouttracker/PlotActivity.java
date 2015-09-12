@@ -24,7 +24,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorMgr = null;
     private Sensor gyroSensor = null;
 
-    private XYPlot aprHistoryPlot = null;
+    private XYPlot gyroPlot = null;
     private CheckBox showFpsCb;
     private SimpleXYSeries xHistorySeries = null;
     private SimpleXYSeries yHistorySeries = null;
@@ -36,7 +36,8 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_plot);
 
         // setup the APR History plot:
-        aprHistoryPlot = (XYPlot) findViewById(R.id.aprHistoryPlot);
+        gyroPlot = (XYPlot) findViewById(R.id.sensorPlot);
+        gyroPlot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
 
         xHistorySeries = new SimpleXYSeries("X");
         xHistorySeries.useImplicitXVals();
@@ -45,23 +46,24 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         zHistorySeries = new SimpleXYSeries("Z");
         zHistorySeries.useImplicitXVals();
 
-        aprHistoryPlot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
-        aprHistoryPlot.setDomainBoundaries(0, 50, BoundaryMode.FIXED);
-        aprHistoryPlot.addSeries(xHistorySeries, new LineAndPointFormatter(Color.rgb(100, 100, 200), Color.rgb(100, 100, 200), null, null));
-        aprHistoryPlot.addSeries(yHistorySeries, new LineAndPointFormatter(Color.rgb(100, 200, 100), Color.rgb(100, 200, 100), null, null));
-        aprHistoryPlot.addSeries(zHistorySeries, new LineAndPointFormatter(Color.rgb(200, 100, 100), Color.rgb(200, 100, 100), null, null));
-        aprHistoryPlot.setDomainStepValue(5);
-        aprHistoryPlot.setTicksPerRangeLabel(3);
-        aprHistoryPlot.setDomainLabel("Axis");
-        aprHistoryPlot.getDomainLabelWidget().pack();
-        aprHistoryPlot.setRangeLabel("Rad/s");
-        aprHistoryPlot.getRangeLabelWidget().pack();
-        aprHistoryPlot.setLayerType(View.LAYER_TYPE_NONE, null);
+        gyroPlot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
+        gyroPlot.setDomainBoundaries(0, 50, BoundaryMode.FIXED);
+        gyroPlot.addSeries(xHistorySeries, new LineAndPointFormatter(Color.rgb(100, 100, 200), Color.rgb(100, 100, 200), null, null));
+        gyroPlot.addSeries(yHistorySeries, new LineAndPointFormatter(Color.rgb(100, 200, 100), Color.rgb(100, 200, 100), null, null));
+        gyroPlot.addSeries(zHistorySeries, new LineAndPointFormatter(Color.rgb(200, 100, 100), Color.rgb(200, 100, 100), null, null));
+        gyroPlot.setDomainStepValue(6);
+        gyroPlot.setTicksPerRangeLabel(3);
+        gyroPlot.setDomainLabel("Axis");
+        gyroPlot.getDomainLabelWidget().pack();
+        gyroPlot.setRangeLabel("Rad/s");
+        gyroPlot.getRangeLabelWidget().pack();
+        gyroPlot.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
 
         // setup checkboxes:
         final PlotStatistics levelStats = new PlotStatistics(1000, false);
         final PlotStatistics histStats = new PlotStatistics(1000, false);
-        aprHistoryPlot.addListener(histStats);
+        gyroPlot.addListener(histStats);
 
         showFpsCb = (CheckBox) findViewById(R.id.showFpsCb);
         showFpsCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -105,7 +107,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         zHistorySeries.addLast(null, sensorEvent.values[2]);
 
         // redraw the Plots:
-        aprHistoryPlot.redraw();
+        gyroPlot.redraw();
     }
 
     @Override
