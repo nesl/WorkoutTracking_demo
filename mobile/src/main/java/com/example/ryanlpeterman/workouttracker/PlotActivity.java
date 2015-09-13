@@ -38,6 +38,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     private SimpleXYSeries xHistorySeries = null;
     private SimpleXYSeries yHistorySeries = null;
     private SimpleXYSeries zHistorySeries = null;
+    private int seriesOffset = 0;
 
     private ArrayList<SensorData> sensorDataBuffer = new ArrayList<>();
 
@@ -113,6 +114,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onStop() {
+        super.onStop();
         stopFlag = true;
     }
 
@@ -163,6 +165,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
             zHistorySeries.removeFirst();
             yHistorySeries.removeFirst();
             xHistorySeries.removeFirst();
+            seriesOffset++;
         }
 
         // add the latest history sample:
@@ -170,12 +173,16 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         yHistorySeries.addLast(null, y);
         zHistorySeries.addLast(null, z);
 
+        //Log.i("SERIES", "zHis" + zHistorySeries.getY(zHistorySeries.size()-1).floatValue() + ", sensorZ=" + z);
+
         // redraw the Plots:
         gyroPlot.redraw();
 
         // push-up detection
         detectPushUp();
     }
+
+    private int lastPushUpCenterSampleIdx = 0;
 
     private void detectPushUp() {
         if (xHistorySeries.size() >= 30) {
@@ -189,45 +196,48 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
                 winGyroZ[i] = tz;
                 winGyroMag[i] = (float)Math.sqrt(tx * tx + ty * ty + tz * tz);
             }
-/*
+
             for (int j = 5; j < 20; j++) {
-                if winGyroZ[j] == max(win_gyro_z((j-2):(j+2)))
-            %fprintf('get j=%d\n', j);
-            for k = (j+1):(W-5)
-            if win_gyro_mag(k) == min(win_gyro_mag((k-2):(k+2))) ...
-            && win_gyro_mag(k) <= 0.8
-                    %fprintf('get j=%d k=%d\n', j, k);
-            for l = (k+1):(W-2)
-            if win_gyro_z(l) == min(win_gyro_z((l-2):(l+2))) ...
-            && 6 < l - j && l - j < 15 ...
-            && 1.3 <= win_gyro_z(j) && win_gyro_z(j) <= 4 ...
-            && -4 <= win_gyro_z(l) && win_gyro_z(l) <= -1
-            cur_center = i+k-1;
-            if cur_center ~= last_center_point
-                    %push_up_filter = 'o';
-            sec = gyro(i+k-1, 1);
-            acc_idx = find(acc(:, 1) > sec);
-            acc_idx = acc_idx(1);
-            PHW = 30;
-            cnt = sum(downward_deg((acc_idx-PHW):(acc_idx+PHW)) <= 20);
-            ratio = cnt / (PHW * 2 + 1);
-            pass = 'o';
-            if ratio < 0.7
-            pass = '.';
-            end
-            fprintf('i=%d, j=%d, k=%d, l=%d (%c)\n', ...
-            i, i+j-1, i+k-1, i+l-1, pass);
-            last_center_point = cur_center;
-            end
-                    j = W;
-            k = W;
-            l = W;
-            end
-                    end
-            end
-                    end
-            end
-                    end*/
+                if (winGyroZ[j] == winMax(winGyroZ, j-2, j+3)) {
+                    //Log.i("PUSH_UP", "first:j=" + j);
+                    for (int k = j + 1; k < 25; k++) {
+                        if (winGyroMag[k] == winMin(winGyroMag, k - 2, k + 3)
+                                && winGyroMag[k] <= 0.8) {
+                            //Log.i("PUSH_UP", "second:j=" + j + ", k=" + k);
+                            for (int l = k + 1; l < 28; l++) {
+                                //Log.i("PUSH_UP", "l=" + l + ", val=" + winGyroZ[l]);
+                                if (winGyroZ[l] == winMin(winGyroZ, l - 2, l + 3)
+                                        && 6 < l - j && l - j < 25
+                                        && 1.3 <= winGyroZ[j] && winGyroZ[j] <= 4.0
+                                        && -4.0 <= winGyroZ[l] && winGyroZ[l] <= -1.0) {
+                                    //Log.i("PUSH_UP", "final:j=" + j + ", k=" + k + ", l=" + l);
+                                    int curCenter = seriesOffset + sidx + k;
+                                    if (curCenter != lastPushUpCenterSampleIdx) {
+                                        //%push_up_filter = 'o';
+                                        //sec = gyro(i+k-1, 1);
+                                        //acc_idx = find(acc(:, 1) > sec);
+                                        //acc_idx = acc_idx(1);
+                                        //PHW = 30;
+                                        //cnt = sum(downward_deg((acc_idx-PHW):(acc_idx+PHW)) <= 20);
+                                        //ratio = cnt / (PHW * 2 + 1);
+                                        //pass = 'o';
+                                        //if ratio < 0.7
+                                        //pass = '.';
+                                        //end
+                                        //fprintf('i=%d, j=%d, k=%d, l=%d (%c)\n', ...
+                                        //i, i+j-1, i+k-1, i+l-1, pass);
+                                        if (curCenter > lastPushUpCenterSampleIdx + 40) {
+                                            Log.i("PUSH_UP", "push up detected " + curCenter);
+                                            lastPushUpCenterSampleIdx = curCenter;
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     private float winMax(float[] arr, int sidx, int eidx) {
@@ -241,7 +251,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     private float winMin(float[] arr, int sidx, int eidx) {
         float minVal = arr[sidx];
         for (int i = sidx + 1; i < eidx; i++)
-            if (arr[i] > minVal)
+            if (arr[i] < minVal)
                 minVal = arr[i];
         return minVal;
     }
