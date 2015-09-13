@@ -37,8 +37,8 @@ public class WorkoutActivity extends AppCompatActivity {
                 String.format("Deadlift %.1f mins, %d reps", data.getDeadlift_time(), data.getDeadlift_rep()));
         ((TextView) findViewById(R.id.squat_time_rep)).setText(
                 String.format("Squat %.1f mins, %d reps", data.getSquat_time(), data.getSquat_rep()));
-        //((TextView) findViewById(R.id.walking_time)).setText(
-        //        String.format("Walking %.1f mins", data.getSitting_time()));
+        ((TextView) findViewById(R.id.pushup_rep)).setText(
+                String.format("Pushup %d reps", data.getPushup_rep()));
     }
 
     @Override

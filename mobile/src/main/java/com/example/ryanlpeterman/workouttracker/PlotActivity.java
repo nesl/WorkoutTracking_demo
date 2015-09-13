@@ -18,15 +18,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 public class PlotActivity extends AppCompatActivity implements SensorEventListener {
     private static final String TAG = "PlotActivity";
@@ -44,6 +46,10 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     private ArrayList<SensorData> sensorDataBuffer = new ArrayList<>();
 
     private Handler addSampleHandler = new Handler();
+
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+    private final Date date = new Date();
+    private final String dateStr = formatter.format(date);
 
     // List to store all the markers for push-up detection
     private LinkedList<XValueMarker> markerList = new LinkedList<>();
@@ -255,6 +261,10 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
                                             markerList.offerLast(marker);
                                             gyroPlot.addMarker(marker);
                                             gyroPlot.redraw();
+
+                                            WorkoutData workoutData = WorkoutData.load(dateStr);
+                                            workoutData.setPushup_rep(workoutData.getPushup_rep() + 1);
+                                            workoutData.save();
                                         }
                                         return;
                                     }

@@ -192,38 +192,39 @@ public class MainActivity extends FragmentActivity implements
         WorkoutData.makeDataFolder();
 
         WorkoutData newExercise = new WorkoutData();
-        newExercise.setDate("03 Sep 2015");
+        newExercise.setDate("09 Sep 2015");
         newExercise.setBench_rep(30);
+        newExercise.setBench_time(3.7f);
         newExercise.setDeadlift_rep(30);
+        newExercise.setDeadlift_time(4.4f);
         newExercise.setSquat_rep(30);
-        newExercise.setBench_time(12);
-        newExercise.setDeadlift_time(8);
-        newExercise.setSquat_time(13);
+        newExercise.setSquat_time(4.2f);
         newExercise.setLying_time(40);
         newExercise.save(/* truncate */ true);
 
         newExercise = new WorkoutData();
-        newExercise.setDate("05 Sep 2015");
+        newExercise.setDate("11 Sep 2015");
         newExercise.setBench_rep(45);
+        newExercise.setBench_time(7.3f);
         newExercise.setDeadlift_rep(45);
+        newExercise.setDeadlift_time(6.6f);
         newExercise.setSquat_rep(45);
-        newExercise.setBench_time(20);
-        newExercise.setDeadlift_time(30);
-        newExercise.setSquat_time(20);
-        newExercise.setWalking_time(12);
-        newExercise.setRunning_time(20);
+        newExercise.setSquat_time(6.9f);
+        newExercise.setWalking_time(12.3f);
+        newExercise.setRunning_time(19.7f);
         newExercise.save(/* truncate */ true);
 
         newExercise = new WorkoutData();
-        newExercise.setDate("06 Sep 2015");
+        newExercise.setDate("12 Sep 2015");
         newExercise.setBench_rep(30);
+        newExercise.setBench_time(3.9f);
         newExercise.setDeadlift_rep(30);
+        newExercise.setDeadlift_time(4.0f);
         newExercise.setSquat_rep(30);
-        newExercise.setBench_time(10);
-        newExercise.setDeadlift_time(10);
-        newExercise.setSquat_time(10);
-        newExercise.setWalking_time(90);
-        newExercise.setRunning_time(80);
+        newExercise.setSquat_time(5.2f);
+        newExercise.setWalking_time(5.5f);
+        newExercise.setRunning_time(0.3f);
+        newExercise.setPushup_rep(26);
         newExercise.save(/* truncate */ true);
     }
 }

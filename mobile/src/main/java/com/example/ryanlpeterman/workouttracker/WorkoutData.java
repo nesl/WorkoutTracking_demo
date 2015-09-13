@@ -22,13 +22,16 @@ public class WorkoutData {
     private float walking_time;
 
     private float bench_time;
-    private float squat_time;
-    private float deadlift_time;
-
     private int bench_rep;
+
+    private float squat_time;
     private int squat_rep;
+
+    private float deadlift_time;
     private int deadlift_rep;
 
+    private float pushup_time;
+    private int pushup_rep;
 
     public String getDate() {
         return date;
@@ -84,30 +87,21 @@ public class WorkoutData {
         return this;
     }
 
-    public float getSquat_time() {
-        return squat_time;
-    }
-
-    public WorkoutData setSquat_time(float squat_time) {
-        this.squat_time = squat_time;
-        return this;
-    }
-
-    public float getDeadlift_time() {
-        return deadlift_time;
-    }
-
-    public WorkoutData setDeadlift_time(float deadlift_time) {
-        this.deadlift_time = deadlift_time;
-        return this;
-    }
-
     public int getBench_rep() {
         return bench_rep;
     }
 
     public WorkoutData setBench_rep(int bench_rep) {
         this.bench_rep = bench_rep;
+        return this;
+    }
+
+    public float getSquat_time() {
+        return squat_time;
+    }
+
+    public WorkoutData setSquat_time(float squat_time) {
+        this.squat_time = squat_time;
         return this;
     }
 
@@ -120,12 +114,39 @@ public class WorkoutData {
         return this;
     }
 
+    public float getDeadlift_time() {
+        return deadlift_time;
+    }
+
+    public WorkoutData setDeadlift_time(float deadlift_time) {
+        this.deadlift_time = deadlift_time;
+        return this;
+    }
+
     public int getDeadlift_rep() {
         return deadlift_rep;
     }
 
     public WorkoutData setDeadlift_rep(int deadlift_rep) {
         this.deadlift_rep = deadlift_rep;
+        return this;
+    }
+
+    public float getPushup_time() {
+        return pushup_time;
+    }
+
+    public WorkoutData setPushup_time(float pushup_time) {
+        this.pushup_time = pushup_time;
+        return this;
+    }
+
+    public int getPushup_rep() {
+        return pushup_rep;
+    }
+
+    public WorkoutData setPushup_rep(int pushup_rep) {
+        this.pushup_rep = pushup_rep;
         return this;
     }
 
@@ -164,11 +185,13 @@ public class WorkoutData {
                         + sitting_time + ","
                         + walking_time + ","
                         + bench_time + ","
-                        + squat_time + ","
-                        + deadlift_time + ","
                         + bench_rep + ","
+                        + squat_time + ","
                         + squat_rep + ","
-                        + deadlift_rep
+                        + deadlift_time + ","
+                        + deadlift_rep + ","
+                        + pushup_time + ","
+                        + pushup_rep
                 );
                 writer.close();
             } catch (Exception e) {
@@ -198,11 +221,13 @@ public class WorkoutData {
             data.sitting_time = Float.parseFloat(terms[3]);
             data.walking_time = Float.parseFloat(terms[4]);
             data.bench_time = Float.parseFloat(terms[5]);
-            data.squat_time = Float.parseFloat(terms[6]);
-            data.deadlift_time = Float.parseFloat(terms[7]);
-            data.bench_rep = Integer.parseInt(terms[8]);
-            data.squat_rep = Integer.parseInt(terms[9]);
+            data.bench_rep = Integer.parseInt(terms[6]);
+            data.squat_time = Float.parseFloat(terms[7]);
+            data.squat_rep = Integer.parseInt(terms[8]);
+            data.deadlift_time = Float.parseFloat(terms[9]);
             data.deadlift_rep = Integer.parseInt(terms[10]);
+            data.pushup_time = Float.parseFloat(terms[11]);
+            data.pushup_rep = Integer.parseInt(terms[12]);
 
             br.close();
             isr.close();
