@@ -17,24 +17,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-
-import com.androidplot.util.PlotStatistics;
+import android.widget.TextView;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XValueMarker;
 import com.androidplot.xy.XYPlot;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PlotActivity extends AppCompatActivity implements SensorEventListener {
+    private static final String TAG = "PlotActivity";
     private static final int HISTORY_SIZE = 250;
     private SensorManager sensorMgr = null;
     private Sensor gyroSensor = null;
 
     private XYPlot gyroPlot = null;
-    private CheckBox showFpsCb;
+    private TextView countTextView;
     private SimpleXYSeries xHistorySeries = null;
     private SimpleXYSeries yHistorySeries = null;
     private SimpleXYSeries zHistorySeries = null;
@@ -44,6 +45,9 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
 
     private Handler addSampleHandler = new Handler();
 
+    // List to store all the markers for push-up detection
+    private LinkedList<XValueMarker> markerList = new LinkedList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +56,9 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         // setup the APR History plot:
         gyroPlot = (XYPlot) findViewById(R.id.sensorPlot);
         gyroPlot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
+        gyroPlot.getGraphWidget().getDomainGridLinePaint().setColor(Color.TRANSPARENT);
+        gyroPlot.getGraphWidget().getRangeGridLinePaint().setColor(Color.TRANSPARENT);
+        gyroPlot.getGraphWidget().getRangeSubGridLinePaint().setColor(Color.TRANSPARENT);
 
         xHistorySeries = new SimpleXYSeries("X");
         xHistorySeries.useImplicitXVals();
@@ -60,7 +67,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         zHistorySeries = new SimpleXYSeries("Z");
         zHistorySeries.useImplicitXVals();
 
-        gyroPlot.setRangeBoundaries(-10, 10, BoundaryMode.FIXED);
+        gyroPlot.setRangeBoundaries(-20, 20, BoundaryMode.FIXED);
         gyroPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
         gyroPlot.addSeries(xHistorySeries, new LineAndPointFormatter(
                 Color.rgb(100, 100, 200), Color.rgb(100, 100, 200), null, null));
@@ -69,27 +76,14 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
         gyroPlot.addSeries(zHistorySeries, new LineAndPointFormatter(
                 Color.rgb(200, 100, 100), Color.rgb(200, 100, 100), null, null));
         gyroPlot.setDomainStepValue(6);
-        gyroPlot.setTicksPerRangeLabel(3);
+        gyroPlot.setRangeStepValue(5);
         gyroPlot.setDomainLabel("Axis");
         gyroPlot.getDomainLabelWidget().pack();
         gyroPlot.setRangeLabel("Rad/s");
         gyroPlot.getRangeLabelWidget().pack();
         gyroPlot.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-
-        // setup checkboxes:
-        final PlotStatistics levelStats = new PlotStatistics(1000, false);
-        final PlotStatistics histStats = new PlotStatistics(1000, false);
-        gyroPlot.addListener(histStats);
-
-        showFpsCb = (CheckBox) findViewById(R.id.showFpsCb);
-        showFpsCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                levelStats.setAnnotatePlotEnabled(b);
-                histStats.setAnnotatePlotEnabled(b);
-            }
-        });
+        countTextView = (TextView) findViewById(R.id.countTextView);
 
         // register for orientation sensor events:
         sensorMgr = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
@@ -125,11 +119,12 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     }
 
     // Called whenever a new gyroSensor reading is taken.
+    // Use the phone sensor data only for testing purposes
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        //addSampleOnPlot(sensorEvent.values[0], /* x-value */
-        //                sensorEvent.values[1], /* y-value */
-        //                sensorEvent.values[2]  /* z-value */);
+        addSampleOnPlot(sensorEvent.values[0], /* x-value */
+                        sensorEvent.values[1], /* y-value */
+                        sensorEvent.values[2]  /* z-value */);
     }
 
     @Override
@@ -166,6 +161,23 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
             yHistorySeries.removeFirst();
             xHistorySeries.removeFirst();
             seriesOffset++;
+
+            // Adjust the x value of markers while plot moves
+            for (XValueMarker marker : markerList) {
+                gyroPlot.removeMarker(marker);
+                float prevVal = marker.getValue().floatValue();
+                if (prevVal > 1) {
+                    marker.setValue(prevVal - 1);
+                    gyroPlot.addMarker(marker);
+                }
+            }
+
+            // Remove all markers with a negative x value
+            while (markerList.peekFirst() != null && markerList.peekFirst().getValue().floatValue() <= 0) {
+                XValueMarker marker = markerList.pollFirst();
+                gyroPlot.removeMarker(marker);
+                Log.i(TAG, "Removed push up marker, list size=" + markerList.size());
+            }
         }
 
         // add the latest history sample:
@@ -183,6 +195,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private int lastPushUpCenterSampleIdx = 0;
+    private static int countPushUp = 0;
 
     private void detectPushUp() {
         if (xHistorySeries.size() >= 30) {
@@ -227,8 +240,21 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
                                         //fprintf('i=%d, j=%d, k=%d, l=%d (%c)\n', ...
                                         //i, i+j-1, i+k-1, i+l-1, pass);
                                         if (curCenter > lastPushUpCenterSampleIdx + 40) {
-                                            Log.i("PUSH_UP", "push up detected " + curCenter);
+                                            Log.i("PUSH_UP", "push up detected, curCenter" + curCenter + ", (curCenter - offset)" + (curCenter - seriesOffset));
                                             lastPushUpCenterSampleIdx = curCenter;
+
+                                            // Update the counter
+                                            countPushUp++;
+                                            countTextView.setText("Push-up: " + countPushUp);
+
+                                            // Add a marker for this push up on the plot
+                                            // TODO: Please change this value to more accurately mark the push-ups
+                                            XValueMarker marker = new XValueMarker(curCenter - seriesOffset, "Push-up");
+                                            marker.getTextPaint().setColor(Color.BLACK);
+                                            marker.getTextPaint().setTextSize(50);
+                                            markerList.offerLast(marker);
+                                            gyroPlot.addMarker(marker);
+                                            gyroPlot.redraw();
                                         }
                                         return;
                                     }
