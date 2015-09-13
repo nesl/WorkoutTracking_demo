@@ -74,6 +74,7 @@ public class DataWindow {
         DataOutputStream w = new DataOutputStream(baos);
 
         try {
+            w.writeByte(MessageFromWearListenService.MESSAGE_TYPE_INERTIAL);
             w.writeInt(mCount);
             w.writeInt(mCapacity);
             for (int i = 0; i < mCount; i++) {
@@ -93,6 +94,9 @@ public class DataWindow {
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             DataInputStream dis = new DataInputStream(bais);
+            int messageType = (int)dis.readByte();
+            if (messageType != MessageFromWearListenService.MESSAGE_TYPE_INERTIAL)
+                return null;
             int count = dis.readInt();
             int capacity = dis.readInt();
             DataWindow window = new DataWindow(1, capacity);

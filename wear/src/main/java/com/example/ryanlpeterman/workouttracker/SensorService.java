@@ -5,15 +5,12 @@ package com.example.ryanlpeterman.workouttracker;
  */
 import android.app.Notification;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -28,6 +25,9 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 
 
 public class SensorService extends Service implements SensorEventListener, DataApi.DataListener,
@@ -52,22 +52,32 @@ public class SensorService extends Service implements SensorEventListener, DataA
     // Used to vibrate the wearable
     private Vibrator vibrator;
 
-    private BroadcastReceiver mBroadcastReceiver;
+    // step counting
+    private int accumulativeStepCounter = 0;
 
-    public class PowerConnectionReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                    status == BatteryManager.BATTERY_STATUS_FULL;
+    // message type
+    public static final int MESSAGE_TYPE_INERTIAL = 0;
+    public static final int MESSAGE_TYPE_NUM_STEP = 1;
 
-            //Checks to see if phone is charging, sends measurements to phone if so
-            //if (isCharging)
-                //Log.i("Charging", "yes");
-                //sendMeasurment();
+    private boolean flagStop = false;
 
-        }
-    }
+    // For receiving battery events
+    //private BroadcastReceiver mBroadcastReceiver;
+
+    //public class PowerConnectionReceiver extends BroadcastReceiver {
+    //    @Override
+    //    public void onReceive(Context context, Intent intent) {
+    //        int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+    //        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+    //                status == BatteryManager.BATTERY_STATUS_FULL;
+    //
+    //        //Checks to see if phone is charging, sends measurements to phone if so
+    //        //if (isCharging)
+    //            //Log.i("Charging", "yes");
+    //            //sendMeasurment();
+    //
+    //    }
+    //}
 
     private final String PATH_AGREEMENT_WITH_PHONE = "/message_path";
     private GoogleApiClient googleApiClient;
@@ -77,9 +87,9 @@ public class SensorService extends Service implements SensorEventListener, DataA
     public void onCreate() {
         super.onCreate();
 
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        mBroadcastReceiver = new PowerConnectionReceiver();
-        registerReceiver(mBroadcastReceiver, ifilter);
+        //IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        //mBroadcastReceiver = new PowerConnectionReceiver();
+        //registerReceiver(mBroadcastReceiver, ifilter);
 
         googleApiClient = new GoogleApiClient.Builder(this)
                         .addApi(Wearable.API)
@@ -106,8 +116,9 @@ public class SensorService extends Service implements SensorEventListener, DataA
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mBroadcastReceiver);
+        //unregisterReceiver(mBroadcastReceiver);
 
+        flagStop = true;
         stopMeasurement();
     }
 
@@ -189,17 +200,20 @@ public class SensorService extends Service implements SensorEventListener, DataA
             if(!liftWindow.addSample(event)){
                 // Process Data
 
-                new DataTransferThread(liftWindow.compress()).start();
+                new InertialDataTransferThread(liftWindow.compress()).start();
                 liftWindow.emptyBuffer();
             }
+        }
+        else if (type == SENS_STEP_COUNTER) {
+            accumulativeStepCounter += (int)(event.values[0]);
         }
     }
 
     // Class to Encapsulate Feature Calculation once Data is collected from sensors
-    private class DataTransferThread extends Thread {
+    private class InertialDataTransferThread extends Thread {
         private byte[] bytes;
 
-        public DataTransferThread(byte[] _bytes){
+        public InertialDataTransferThread(byte[] _bytes){
             bytes = _bytes;
         }
 
@@ -216,7 +230,48 @@ public class SensorService extends Service implements SensorEventListener, DataA
                     // TODO: pop out warning or something?
                 }
             }
-            Log.i("Watch", "exit");
+        }
+    }
+
+    // Class to Encapsulate Feature Calculation once Data is collected from sensors
+    private class StepDataTransferThread extends Thread {
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(10000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (flagStop)
+                    return;
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                DataOutputStream w = new DataOutputStream(baos);
+
+                try {
+                    w.writeByte(MESSAGE_TYPE_NUM_STEP);
+                    w.writeInt(accumulativeStepCounter);
+                    w.flush();
+                } catch (Exception e) {
+                }
+
+                byte[] bytes = baos.toByteArray();
+
+                NodeApi.GetConnectedNodesResult nodes
+                        = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                for (Node node : nodes.getNodes()) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi
+                            .sendMessage(googleApiClient, node.getId(),
+                                    PATH_AGREEMENT_WITH_PHONE, bytes)
+                            .await();
+                    if (result.getStatus().isSuccess()) {
+                        // TODO: pop out warning or something?
+                    }
+                }
+            }
         }
     }
 

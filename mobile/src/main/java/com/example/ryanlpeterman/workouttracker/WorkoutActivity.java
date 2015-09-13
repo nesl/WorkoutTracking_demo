@@ -17,10 +17,6 @@ public class WorkoutActivity extends AppCompatActivity {
 
         date = getIntent().getExtras().getString("date");
         data = WorkoutData.load(date);
-        if (data == null) {
-            data = new WorkoutData();
-            data.setDate(date);
-        }
 
         ((TextView) findViewById(R.id.date)).setText(date);
         //((TextView) findViewById(R.id.lying_time)).setText(

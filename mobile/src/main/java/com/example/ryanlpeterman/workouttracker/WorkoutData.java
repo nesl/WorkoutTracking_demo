@@ -200,10 +200,25 @@ public class WorkoutData {
     }
 
     public static WorkoutData load(String date) {
+        return load(date, true);
+    }
+
+    public static WorkoutData load(String date, boolean flagCreate) {
+        /** Args:
+         *    date: workout date
+         *    flagCreate: When enabled, when the data is not existed, it generate a new one with
+         *                all the counter initialized with zeros.
+         */
         WorkoutData data = new WorkoutData();
         File file = new File(folderPath, date);
-        if (!file.exists())
-            return null;
+        if (!file.exists()) {
+            if (flagCreate) {
+                data.setDate(date);
+                return data;
+            } else {
+                return null;
+            }
+        }
         try {
             InputStream fis = new FileInputStream(file);
             InputStreamReader isr = new InputStreamReader(fis);
