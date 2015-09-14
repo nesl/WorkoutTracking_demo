@@ -95,18 +95,18 @@ public class MainActivity extends FragmentActivity implements
     }
 
     // Send message when the start button is pressed
-    public void startButtonPressed(View view) {
-        String message = "START";
-        //Requires a new thread to avoid blocking the UI
-        new SendToDataLayerThread("/message_path", message).start();
-    }
+    //public void startButtonPressed(View view) {
+    //    String message = "START";
+    //    //Requires a new thread to avoid blocking the UI
+    //    new SendToDataLayerThread("/message_path", message).start();
+    //}
 
     // Send message when the stop button is pressed
-    public void stopButtonPressed(View view) {
-        String message = "STOP";
-        //Requires a new thread to avoid blocking the UI
-        new SendToDataLayerThread("/message_path", message).start();
-    }
+    //public void stopButtonPressed(View view) {
+    //    String message = "STOP";
+    //    //Requires a new thread to avoid blocking the UI
+    //    new SendToDataLayerThread("/message_path", message).start();
+    //}
 
     // Open calendar when calendar button is pressed
     public void calendarButtonPressed(View view) {
