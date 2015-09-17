@@ -29,19 +29,21 @@ public class MessageFromWearListenService extends WearableListenerService {
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-        Log.i("WearListenerService", "oh yeah got in onMessageReceived()");
+        //Log.i("WearListenerService", "oh yeah got in onMessageReceived()");
 
         if (messageEvent.getPath().equals(PATH_AGREEMENT_WITH_WEAR)) {
             //Log.i("WearListenerService", "got message: " + message);
 
             byte[] bytes = messageEvent.getData();
             if ((int)bytes[0] == MESSAGE_TYPE_INERTIAL) {
+                //Log.i("WearListenerService", "inertial");
                 // Broadcast message to wearable activity for display
                 Intent messageIntent = new Intent();
                 messageIntent.setAction(Intent.ACTION_SEND);
                 messageIntent.putExtra("sensor_data", messageEvent.getData());
                 LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
             } else if ((int)bytes[0] == MESSAGE_TYPE_NUM_STEP) {
+                //Log.i("WearListenerService", "step counting");
                 SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
                 Date today = new Date();
                 String todayStr = formatter.format(today);

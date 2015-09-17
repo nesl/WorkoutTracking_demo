@@ -128,9 +128,9 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
     // Use the phone sensor data only for testing purposes
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        addSampleOnPlot(sensorEvent.values[0], /* x-value */
-                        sensorEvent.values[1], /* y-value */
-                        sensorEvent.values[2]  /* z-value */);
+        //addSampleOnPlot(sensorEvent.values[0], /* x-value */
+        //                sensorEvent.values[1], /* y-value */
+        //                sensorEvent.values[2]  /* z-value */);
     }
 
     @Override
@@ -231,6 +231,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
                                         && -4.0 <= winGyroZ[l] && winGyroZ[l] <= -1.0) {
                                     //Log.i("PUSH_UP", "final:j=" + j + ", k=" + k + ", l=" + l);
                                     int curCenter = seriesOffset + sidx + k;
+                                    int curHighPeak = seriesOffset + sidx + j;
                                     if (curCenter != lastPushUpCenterSampleIdx) {
                                         //%push_up_filter = 'o';
                                         //sec = gyro(i+k-1, 1);
@@ -255,7 +256,7 @@ public class PlotActivity extends AppCompatActivity implements SensorEventListen
 
                                             // Add a marker for this push up on the plot
                                             // TODO: Please change this value to more accurately mark the push-ups
-                                            XValueMarker marker = new XValueMarker(curCenter - seriesOffset, "Push-up");
+                                            XValueMarker marker = new XValueMarker(curHighPeak - seriesOffset, "Push-up");
                                             marker.getTextPaint().setColor(Color.BLACK);
                                             marker.getTextPaint().setTextSize(50);
                                             markerList.offerLast(marker);

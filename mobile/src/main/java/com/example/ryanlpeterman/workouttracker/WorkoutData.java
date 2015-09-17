@@ -228,7 +228,7 @@ public class WorkoutData {
             if (line == null)
                 return null;
             String[] terms = line.split(",");
-            if (terms.length != 11)
+            if (terms.length != 13)
                 return null;
             data.date = terms[0];
             data.lying_time = Float.parseFloat(terms[1]);
