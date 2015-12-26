@@ -1,7 +1,11 @@
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+*~
+
+#Compiled objects
+*.o
+*.pyc
+
+#Swapfiles
+*.swp
